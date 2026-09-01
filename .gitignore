@@ -1,0 +1,32 @@
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Ambiente — nenhuma chave entra no repositorio
+.env
+.env.*
+!.env.example
+
+# Supabase CLI
+supabase/.branches/
+supabase/.temp/
+
+# Testes e cobertura
+coverage/
+playwright-report/
+test-results/
+
+# Editor e sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

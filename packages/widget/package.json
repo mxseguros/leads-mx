@@ -1,0 +1,11 @@
+{
+  "name": "@mx/widget",
+  "private": true,
+  "version": "0.3.0",
+  "description": "Widget de captura em Shadow DOM — Fase 1",
+  "scripts": {
+    "lint": "echo \"widget: sem código ainda (Fase 1)\"",
+    "typecheck": "echo \"widget: sem código ainda (Fase 1)\"",
+    "test": "echo \"widget: sem código ainda (Fase 1)\""
+  }
+}

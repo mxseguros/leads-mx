@@ -1,0 +1,25 @@
+{
+  "name": "mx-leads",
+  "private": true,
+  "version": "0.3.0",
+  "description": "Captura e prospeccao de leads PJ para a MX Corretora de Seguros",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @mx/web dev",
+    "build": "pnpm --filter @mx/web build",
+    "start": "pnpm --filter @mx/web start",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "base:sintetica": "tsx scripts/gerar-base-sintetica.ts",
+    "teste:rls": "psql \"$SUPABASE_DB_URL\" -v ON_ERROR_STOP=1 -f supabase/tests/rls.sql"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.48.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

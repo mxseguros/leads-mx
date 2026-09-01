@@ -1,0 +1,56 @@
+name: CI
+
+# Item F0-2 do plano: o CI bloqueia merge. Barato agora, impossivel de
+# retroencaixar na semana 9.
+#
+# Para ele virar barreira de verdade, marque este job como "required" em
+# Settings > Branches > Branch protection rules > main.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Lint, tipos, testes e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      # O build do Next importa os modulos que leem ambiente. Valores de
+      # fachada: o CI nao fala com o Supabase, so precisa compilar.
+      NEXT_PUBLIC_SUPABASE_URL: https://exemplo.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: chave-de-ci
+      NEXT_PUBLIC_URL_BASE: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Habilitar pnpm
+        run: corepack enable pnpm
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.9"
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Tipos
+        run: pnpm typecheck
+
+      - name: Testes
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

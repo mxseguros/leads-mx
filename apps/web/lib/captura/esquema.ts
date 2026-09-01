@@ -143,3 +143,41 @@ export function validarCaptura(
   }
   return { ok: false, erros };
 }
+
+/**
+ * Cadastro manual pelo admin (§5.3, F2-10).
+ *
+ * Reaproveita nome, telefone e e-mail da captura pública — as regras do §5.7
+ * valem igual, quem digita errado o DDD digita errado nos dois lugares.
+ *
+ * O que muda: não há checkbox de consentimento, porque quem preenche é o
+ * consultor, e o consentimento foi dado na conversa. O registro fica marcado
+ * como tal em vez de fingir que veio de um formulário assinado.
+ */
+export const manualEsquema = z.object({
+  nome: nome("Nome"),
+  sobrenome: nome("Sobrenome"),
+  telefone: telefoneEsquema,
+  email: emailEsquema,
+  empresa: z.string().trim().max(120).optional().nullable(),
+  produtoId: z.number().int().positive().optional().nullable(),
+  origemSlug: z.string().trim().max(40).default("manual"),
+  responsavelId: z.string().uuid().optional().nullable(),
+  fase: z.string().trim().max(20).default("potenciais"),
+});
+
+export type Manual = z.infer<typeof manualEsquema>;
+
+export function validarManual(
+  bruto: unknown,
+): { ok: true; dados: Manual } | { ok: false; erros: Record<string, string> } {
+  const r = manualEsquema.safeParse(bruto);
+  if (r.success) return { ok: true, dados: r.data };
+
+  const erros: Record<string, string> = {};
+  for (const problema of r.error.issues) {
+    const campo = problema.path[0] as string | undefined;
+    if (campo && !erros[campo]) erros[campo] = problema.message;
+  }
+  return { ok: false, erros };
+}

@@ -26,6 +26,7 @@ import type { Referencias } from "@/lib/leads/consulta";
 import { dataCurta, moeda, telefone } from "@/lib/formato";
 import { Ficha } from "./ficha";
 import { ModalMudancaFase } from "./modais";
+import { NovoLead } from "./novo-lead";
 import { Filtros } from "./filtros";
 import { aplicarFiltros, type EstadoFiltros } from "@/lib/leads/filtros";
 
@@ -60,6 +61,7 @@ export function Quadro({
   const [arrastando, setArrastando] = useState<Lead | null>(null);
   const [pendente, setPendente] = useState<{ lead: Lead; destino: FaseId } | null>(null);
   const [salvando, setSalvando] = useState(false);
+  const [novoEm, setNovoEm] = useState<FaseId | null>(null);
   const { estado: aviso, mostrar, fechar } = useAviso();
 
   const sensores = useSensors(
@@ -167,6 +169,7 @@ export function Quadro({
                 fase={f.id}
                 leads={ordenarCartoes(visiveis.filter((l) => l.fase === f.id))}
                 onAbrir={setAbertoId}
+                onNovo={setNovoEm}
               />
             ))}
           </div>
@@ -202,6 +205,21 @@ export function Quadro({
         />
       ) : null}
 
+      {novoEm ? (
+        <NovoLead
+          faseInicial={novoEm}
+          referencias={referencias}
+          onFechar={() => setNovoEm(null)}
+          onCriado={() => {
+            setNovoEm(null);
+            mostrar("Lead cadastrado.");
+            // Recarrega do servidor: o lead novo precisa vir com os derivados
+            // (atrasado, dias de vida) calculados pela view, nao chutados aqui.
+            router.refresh();
+          }}
+        />
+      ) : null}
+
       <Aviso estado={aviso} onFechar={fechar} />
     </>
   );
@@ -213,10 +231,12 @@ function Coluna({
   fase: id,
   leads,
   onAbrir,
+  onNovo,
 }: {
   fase: FaseId;
   leads: Lead[];
   onAbrir: (id: string) => void;
+  onNovo: (fase: FaseId) => void;
 }) {
   const f = fase(id);
   const { setNodeRef, isOver } = useDroppable({ id });
@@ -249,6 +269,15 @@ function Coluna({
             {atrasados}
           </span>
         ) : null}
+        <button
+          type="button"
+          onClick={() => onNovo(id)}
+          aria-label={`Novo lead em ${f.nome}`}
+          title={`Novo lead em ${f.nome}`}
+          className="grid size-5 place-items-center rounded-[4px] text-[15px] leading-none text-muted hover:bg-surface-3 hover:text-heading"
+        >
+          +
+        </button>
       </header>
 
       <div className="flex min-h-[120px] flex-1 flex-col gap-2 overflow-y-auto p-2">

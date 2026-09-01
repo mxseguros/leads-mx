@@ -3,6 +3,7 @@ import "server-only";
 import { clienteServidor } from "../supabase/servidor";
 import { ehFaseValida, fase, type FaseId } from "../dominio/fases";
 import { efeitosDaEntrada, validarEntrada, type DadosDaMudanca } from "../dominio/regras";
+import { validarManual } from "../captura/esquema";
 import { proximoDiaUtil } from "../captura/registrar";
 import type { Perfil } from "../api";
 
@@ -335,4 +336,92 @@ function limparNulos(objeto: Record<string, unknown>): Record<string, unknown> {
     if (valor !== null && valor !== undefined && valor !== "") saida[chave] = valor;
   }
   return saida;
+}
+
+/**
+ * Cadastro manual pelo admin (§5.3, F2-10).
+ *
+ * Passa pela sessão, então a RLS vale e o autor fica registrado. Diferente da
+ * captura pública, aqui existe alguém logado assumindo a responsabilidade pelo
+ * dado — e o consentimento fica marcado como coletado na conversa, em vez de
+ * copiar a versão do texto da landing e fingir que a pessoa leu.
+ */
+export async function criarManual(
+  entrada: unknown,
+  autor: Perfil,
+): Promise<Resultado<{ id: string }>> {
+  const validacao = validarManual(entrada);
+  if (!validacao.ok) {
+    const [campo, mensagem] = Object.entries(validacao.erros)[0] ?? [];
+    return falha(422, "dados_invalidos", mensagem ?? "Confira os dados informados.", campo);
+  }
+
+  const dados = validacao.dados;
+  const supabase = await clienteServidor();
+
+  const { data: origem } = await supabase
+    .from("lead_sources")
+    .select("id")
+    .eq("slug", dados.origemSlug)
+    .maybeSingle();
+
+  if (!origem) {
+    return falha(422, "origem_invalida", "Origem desconhecida.", "origemSlug");
+  }
+
+  // Duplicata no cadastro manual não bloqueia: o consultor pode estar
+  // registrando um contato que ele SABE ser da mesma empresa. Mas avisa, para
+  // ninguém criar um segundo cartão sem perceber.
+  const { data: existente } = await supabase
+    .from("leads")
+    .select("id, first_name, last_name")
+    .or(`phone.eq.${dados.telefone},email.eq.${dados.email}`)
+    .is("deleted_at", null)
+    .limit(1);
+
+  if (existente?.[0]) {
+    return falha(
+      409,
+      "lead_duplicado",
+      `Já existe um lead com este telefone ou e-mail: ${existente[0].first_name} ${existente[0].last_name}.`,
+      "telefone",
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("leads")
+    .insert({
+      first_name: dados.nome,
+      last_name: dados.sobrenome,
+      phone: dados.telefone,
+      email: dados.email,
+      company: dados.empresa || null,
+      product_id: dados.produtoId ?? null,
+      source_id: Number(origem.id),
+      owner_id: dados.responsavelId || autor.id,
+      stage: ehFaseValida(dados.fase) ? dados.fase : "potenciais",
+      next_action_label: "1º contato",
+      next_action_at: proximoDiaUtil(),
+      consent_at: new Date().toISOString(),
+      consent_text_version: "cadastro-manual",
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    if (error.message.includes("leads_phone_check")) {
+      return falha(422, "telefone_invalido", "Telefone precisa ter DDD + 9 dígitos.", "telefone");
+    }
+    return falha(500, "falha_gravacao", "Não conseguimos cadastrar o lead.");
+  }
+
+  const id = String(data.id);
+  await supabase.from("lead_events").insert({
+    lead_id: id,
+    type: "created",
+    actor_id: autor.id,
+    payload: { origem: dados.origemSlug, manual: true, por: autor.nome },
+  });
+
+  return { ok: true, dados: { id } };
 }

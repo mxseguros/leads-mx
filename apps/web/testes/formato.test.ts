@@ -94,6 +94,18 @@ describe("capitalizarNome", () => {
     expect(capitalizarNome("maria da silva")).toBe("Maria da Silva");
   });
 
+  it("preposicao continua minuscula abrindo o campo sobrenome", () => {
+    // Nome e sobrenome sao campos separados: "de oliveira" comeca a string,
+    // mas o cartao mostra "Rodrigo de Oliveira", nao "Rodrigo De Oliveira".
+    expect(capitalizarNome("de oliveira")).toBe("de Oliveira");
+    expect(capitalizarNome("dos santos")).toBe("dos Santos");
+  });
+
+  it("preposicao sozinha vira maiuscula", () => {
+    // Sem nome nenhum para acompanhar, "de" isolado e so uma palavra.
+    expect(capitalizarNome("de")).toBe("De");
+  });
+
   it("remove espacos duplos", () => {
     expect(capitalizarNome("joao   pedro")).toBe("Joao Pedro");
   });

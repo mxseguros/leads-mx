@@ -79,18 +79,31 @@ export function porcentagem(fracao: number | null | undefined): string {
 /**
  * Capitalizacao dos campos de nome (§5.7): "ana maria" -> "Ana Maria".
  * Preposicoes ficam minusculas — "Maria da Silva", nao "Maria Da Silva".
+ *
+ * A preposicao continua minuscula mesmo abrindo o texto, porque nome e
+ * sobrenome sao campos SEPARADOS e sempre exibidos juntos: o sobrenome
+ * "de oliveira" comeca a string, mas no cartao aparece como "Rodrigo de
+ * Oliveira". Capitalizar por estar na posicao zero produzia "Rodrigo De
+ * Oliveira", que esta errado em portugues — e esse nome vai para a saudacao
+ * do WhatsApp.
+ *
+ * A excecao e a palavra sozinha: "de" isolado vira "De", porque ai nao ha
+ * nome nenhum para ela acompanhar.
  */
 const MINUSCULAS = new Set(["da", "de", "di", "do", "das", "dos", "e"]);
 
 export function capitalizarNome(valor: string): string {
-  return (valor ?? "")
+  const palavras = (valor ?? "")
     .replace(/\s+/g, " ")
     .trimStart()
     .toLocaleLowerCase("pt-BR")
-    .split(" ")
+    .split(" ");
+
+  return palavras
     .map((palavra, i) => {
       if (!palavra) return palavra;
-      if (i > 0 && MINUSCULAS.has(palavra)) return palavra;
+      const soPreposicao = palavras.filter(Boolean).length === 1;
+      if (MINUSCULAS.has(palavra) && !soPreposicao) return palavra;
       return palavra[0]!.toLocaleUpperCase("pt-BR") + palavra.slice(1);
     })
     .join(" ");

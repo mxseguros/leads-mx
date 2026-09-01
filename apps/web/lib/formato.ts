@@ -100,7 +100,7 @@ export function capitalizarNome(valor: string): string {
     .split(" ");
 
   return palavras
-    .map((palavra, i) => {
+    .map((palavra) => {
       if (!palavra) return palavra;
       const soPreposicao = palavras.filter(Boolean).length === 1;
       if (MINUSCULAS.has(palavra) && !soPreposicao) return palavra;

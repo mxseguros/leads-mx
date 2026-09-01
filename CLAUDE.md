@@ -78,8 +78,43 @@ corepack pnpm build
 corepack pnpm base:sintetica  # popula leads de desenvolvimento
 ```
 
+## Ambiente
+
+O projeto Supabase de **desenvolvimento** está com schema, seeds e RLS
+aplicados e verificados contra o banco real. A referência dele fica no `.env`,
+não aqui. Produção ainda não existe (criar antes do go-live da Fase 1).
+
+Credenciais em `.env` e `apps/web/.env.local`, os dois fora do git. O projeto
+usa o formato novo de chave: `sb_publishable_` e `sb_secret_`.
+
+Há um usuário `gestor` cadastrado, **sem senha** — o acesso é por magic link.
+
 ## Estado atual
 
-**Fase 0 (Fundação) entregue.** Fases 1 a 4 seguem o checklist do
-`Docs/MX-Leads-Plano-Execucao-v0.3.md`. A landing pública, a captura e o widget
-são a Fase 1; arrastar, ficha e regras de fase são a Fase 2.
+**Fase 0 entregue e verificada no banco real.** 16 leads sintéticos nas sete
+fases, gatilho de perfil funcionando, `local_today()` marcando atraso no fuso de
+São Paulo, middleware redirecionando em vez de dar 500, RLS liberando para
+perfil ativo e recusando para anônimo.
+
+Três pendências que **não são de código** e ficaram para a MX:
+
+1. **`revoke` de `anon` não aplicado.** A migration
+   `20260901120300_fechar_views_para_anon.sql` existe no repositório mas nunca
+   rodou no banco — `v_pipeline_metrics`, `leads` e `products` ainda respondem
+   HTTP 200 a requisição sem sessão (com zeros e listas vazias, sem vazar dado).
+   É DDL: precisa do SQL Editor ou da connection string.
+2. **E-mail do magic link em HTTP 429.** O SMTP embutido do Supabase permite ~2
+   envios por hora. Resolver configurando SMTP customizado apontando para o
+   Resend — é a dependência E6 do plano.
+3. **CI não bloqueia merge.** O workflow roda, mas falta marcar o job como
+   *required* em branch protection no GitHub.
+
+Decisões fechadas ao construir, ambas reversíveis: **D1** backend em Route
+Handlers do Next (não FastAPI) e **D5** `won_value` separado de
+`estimated_value`. Continuam abertas: **D3** (Empresa/CNPJ na ficha em v1 ou
+v1.1) e **D4** (landings por produto na v1) — a D4 precisa ser decidida antes da
+landing da Fase 1, senão vira retrabalho.
+
+Próximo: **Fase 1 (Captura)** — landing, `POST /api/v1/leads/public` com
+Turnstile, honeypot, rate limit e dedupe de 30 dias, e o widget em Shadow DOM.
+Checklist completo em `Docs/MX-Leads-Plano-Execucao-v0.3.md`.

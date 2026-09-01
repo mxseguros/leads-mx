@@ -179,6 +179,33 @@ begin
   end;
   perform pg_temp.exigir(n = 0, format('anon leu %s linha(s) de v_leads_board', n));
 end $$;
+
+-- View AGREGADA e o caso que escapou no primeiro teste contra o banco real:
+-- ela devolve linha mesmo sobre zero linhas visiveis, porque count(*) de nada
+-- e 0, e 0 e uma resposta. Aqui a exigencia e nao conseguir chegar na view.
+do $$
+declare alcancou boolean := false;
+begin
+  begin
+    perform 1 from public.v_pipeline_metrics;
+    alcancou := true;
+  exception when insufficient_privilege then
+    alcancou := false;
+  end;
+  perform pg_temp.exigir(not alcancou, 'anon alcancou v_pipeline_metrics');
+end $$;
+
+do $$
+declare alcancou boolean := false;
+begin
+  begin
+    perform 1 from public.v_stage_counts;
+    alcancou := true;
+  exception when insufficient_privilege then
+    alcancou := false;
+  end;
+  perform pg_temp.exigir(not alcancou, 'anon alcancou v_stage_counts');
+end $$;
 reset role;
 
 rollback;

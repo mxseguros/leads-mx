@@ -116,13 +116,22 @@ landing da Fase 1, senão vira retrabalho.
 
 ## Escopo
 
-**O widget saiu do escopo** (decisão de 01/09/2026). O produto é a landing de
-captação mais o admin. Consequência que já está no código: a rota pública não
-tem CORS — sem widget, o único chamador legítimo é o formulário da própria
-landing, que é mesma origem.
+Decisões de 01/09/2026 que cortam o plano original:
 
-Os itens F1-8 e F1-9 do plano de execução ficam cancelados. As origens
-`widget-flutuante` e `widget-inline` em `lead_sources` estão inativas.
+**O widget saiu** (F1-8, F1-9). O produto é a landing de captação mais o admin.
+Consequência que já está no código: a rota pública **não tem CORS** — sem
+widget, o único chamador legítimo é o formulário da própria landing, que é
+mesma origem, e o curinga deixaria qualquer site gravar lead no board. As
+origens `widget-flutuante` e `widget-inline` em `lead_sources` estão inativas.
+
+**O aviso de novo lead por e-mail saiu** (F1-11). A aplicação não manda e-mail
+nenhum, e não depende do Resend. A equipe descobre o lead novo abrindo a
+esteira, onde ele nasce em Clientes potenciais com "1º contato" agendado para o
+próximo dia útil.
+
+Cuidado para não confundir: o Supabase **continua** mandando o magic link do
+login pelo SMTP embutido dele, que é limitado a poucos envios por hora. Isso é
+ajuste no painel (Authentication → Emails), não código.
 
 ## Próximo
 

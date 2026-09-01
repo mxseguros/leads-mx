@@ -3,7 +3,6 @@ import { validarCaptura } from "@/lib/captura/esquema";
 import { registrarCaptura } from "@/lib/captura/registrar";
 import { verificarTurnstile } from "@/lib/antispam/turnstile";
 import { verificarLimite } from "@/lib/antispam/limite";
-import { avisarNovoLead } from "@/lib/notificar/email";
 import { lerConfiguracoes } from "@/lib/configuracoes";
 
 /**
@@ -135,17 +134,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Não segura a resposta esperando o e-mail: o visitante não tem nada a ver
-    // com a caixa de entrada do gestor.
-    void avisarNovoLead({
-      id: resultado.id,
-      nome: `${dados.nome} ${dados.sobrenome}`,
-      telefone: dados.telefone,
-      email: dados.email,
-      produto: dados.produto ?? null,
-      origem: dados.origem,
-    });
-
+    // Sem aviso por e-mail (fora de escopo): a equipe descobre o lead novo
+    // abrindo a esteira, onde ele nasce em Clientes potenciais com "1º
+    // contato" agendado para o proximo dia util.
     return NextResponse.json({ id: resultado.id }, { status: 201 });
   } catch (falha) {
     console.error("[captura] falha ao registrar:", falha);

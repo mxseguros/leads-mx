@@ -3,7 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 /** Forma que o @supabase/ssr entrega em setAll. */
 type CookieParaGravar = { name: string; value: string; options: CookieOptions };
-import { chaveAnonima, urlSupabase } from "../ambiente";
+import { chavePublicavel, urlSupabase } from "../ambiente";
 
 /**
  * Cliente de servidor com a sessao da pessoa logada.
@@ -12,7 +12,7 @@ import { chaveAnonima, urlSupabase } from "../ambiente";
 export async function clienteServidor() {
   const armazem = await cookies();
 
-  return createServerClient(urlSupabase(), chaveAnonima(), {
+  return createServerClient(urlSupabase(), chavePublicavel(), {
     cookies: {
       getAll() {
         return armazem.getAll();

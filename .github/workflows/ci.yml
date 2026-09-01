@@ -26,7 +26,7 @@ jobs:
       # O build do Next importa os modulos que leem ambiente. Valores de
       # fachada: o CI nao fala com o Supabase, so precisa compilar.
       NEXT_PUBLIC_SUPABASE_URL: https://exemplo.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: chave-de-ci
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: chave-de-ci
       NEXT_PUBLIC_URL_BASE: http://localhost:3000
 
     steps:

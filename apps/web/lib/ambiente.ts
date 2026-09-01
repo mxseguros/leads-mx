@@ -22,27 +22,28 @@ export function urlSupabase(): string {
   );
 }
 
-export function chaveAnonima(): string {
+export function chavePublicavel(): string {
   return obrigatoria(
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   );
 }
 
 /**
- * Service role: ignora RLS. So pode ser chamada em codigo de servidor.
- * A guarda abaixo e barata e transforma um vazamento silencioso em erro alto.
+ * Chave secreta (sb_secret_...): ignora RLS. So pode ser chamada em codigo de
+ * servidor. A guarda abaixo e barata e transforma um vazamento silencioso em
+ * erro alto.
  */
-export function chaveServico(): string {
+export function chaveSecreta(): string {
   if (typeof window !== "undefined") {
     throw new Error(
-      "A service role foi acessada no navegador. Ela ignora a RLS e nunca pode " +
+      "A chave secreta foi acessada no navegador. Ela ignora a RLS e nunca pode " +
         "sair do servidor — verifique o import que puxou este módulo para o cliente.",
     );
   }
   return obrigatoria(
-    "SUPABASE_SERVICE_ROLE_KEY",
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    "SUPABASE_SECRET_KEY",
+    process.env.SUPABASE_SECRET_KEY,
   );
 }
 

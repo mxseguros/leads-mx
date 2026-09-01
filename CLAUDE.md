@@ -36,7 +36,7 @@ Sem isso o histórico mente e o Desfazer não tem o que reverter.
 500 em toda rota que passa pelo matcher, inclusive o login — e aí ninguém entra
 nem para consertar. Falha de auth vira redirect para `/entrar`.
 
-**A service role ignora a RLS.** Vive só em `lib/supabase/administrador.ts`,
+**A chave secreta ignora a RLS.** Vive só em `lib/supabase/administrador.ts`,
 nunca em `NEXT_PUBLIC_*`, nunca em componente de cliente, nunca no widget.
 
 **Cores de marca ≠ cores de status.** Navy e azul-claro são marca e ação;

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 type CookieParaGravar = { name: string; value: string; options: CookieOptions };
-import { chaveAnonima, urlSupabase } from "../ambiente";
+import { chavePublicavel, urlSupabase } from "../ambiente";
 
 /**
  * Renova a sessao e diz se ha alguem logado.
@@ -15,7 +15,7 @@ export async function renovarSessao(request: NextRequest) {
   let resposta = NextResponse.next({ request });
 
   try {
-    const supabase = createServerClient(urlSupabase(), chaveAnonima(), {
+    const supabase = createServerClient(urlSupabase(), chavePublicavel(), {
       cookies: {
         getAll() {
           return request.cookies.getAll();

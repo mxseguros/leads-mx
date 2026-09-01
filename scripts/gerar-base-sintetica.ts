@@ -51,13 +51,13 @@ function carregarEnv(caminho = ".env") {
 carregarEnv();
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const CHAVE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const CHAVE = process.env.SUPABASE_SECRET_KEY;
 
 const DOMINIO = "exemplo.test";
 
 if (!URL || !CHAVE) {
   console.error(
-    "Faltam NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY.\n" +
+    "Faltam NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SECRET_KEY.\n" +
       "Copie .env.example para .env e preencha com o projeto de DESENVOLVIMENTO.",
   );
   process.exit(1);

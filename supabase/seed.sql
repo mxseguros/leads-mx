@@ -16,13 +16,15 @@ on conflict (label) do nothing;
 -- ---------------------------------------------------------------------------
 -- Origens (§7)
 -- ---------------------------------------------------------------------------
-insert into lead_sources (slug, label) values
-  ('landing',          'Landing page'),
-  ('widget-flutuante', 'Widget flutuante'),
-  ('widget-inline',    'Widget no site'),
-  ('indicacao',        'Indicação'),
-  ('instagram',        'Instagram'),
-  ('manual',           'Cadastro manual')
+insert into lead_sources (slug, label, active) values
+  ('landing',          'Landing page',     true),
+  ('indicacao',        'Indicação',        true),
+  ('instagram',        'Instagram',        true),
+  ('manual',           'Cadastro manual',  true),
+  -- Widget fora de escopo (01/09/2026). Ficam inativos em vez de sumir: lead
+  -- antigo pode apontar para eles, e source_id e NOT NULL.
+  ('widget-flutuante', 'Widget flutuante', false),
+  ('widget-inline',    'Widget no site',   false)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------------

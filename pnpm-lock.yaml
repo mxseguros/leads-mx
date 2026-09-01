@@ -70,8 +70,6 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(lightningcss@1.32.0)
 
-  packages/widget: {}
-
 packages:
 
   '@alloc/quick-lru@5.3.0':

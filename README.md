@@ -1,7 +1,7 @@
 # MX Leads
 
 Captura e prospecção de leads PJ para a MX Corretora de Seguros.
-Landing e widget capturam; a equipe trabalha em uma esteira de sete fases.
+A landing captura; a equipe trabalha em uma esteira de sete fases.
 
 Documentação em [`Docs/`](Docs/) · convenções em [`CLAUDE.md`](CLAUDE.md).
 

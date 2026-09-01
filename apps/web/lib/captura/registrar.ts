@@ -106,8 +106,8 @@ export async function registrarCaptura(
   ]);
 
   if (origemId === null) {
-    // source_id é NOT NULL. Origem desconhecida vinda de um widget mal
-    // instalado não pode derrubar a captura — cai para 'landing'.
+    // source_id é NOT NULL. Origem desconhecida não pode derrubar a
+    // captura — cai para 'landing'.
     console.warn(`[captura] origem desconhecida: ${dados.origem}`);
   }
 

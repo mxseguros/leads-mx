@@ -7,7 +7,7 @@ import { avisarNovoLead } from "@/lib/notificar/email";
 import { lerConfiguracoes } from "@/lib/configuracoes";
 
 /**
- * POST /api/v1/leads/publico — captura pública da landing e do widget (§8).
+ * POST /api/v1/leads/publico — captura pública da landing (§8).
  *
  * A ordem das checagens é deliberada, da mais barata para a mais cara:
  *   1. rate limit      — sem I/O externo
@@ -24,18 +24,22 @@ import { lerConfiguracoes } from "@/lib/configuracoes";
 
 export const runtime = "nodejs";
 
-const CORS = {
-  // O widget roda no site da MX e em landings de campanha; a rota é pública
-  // por natureza e não carrega cookie de sessão.
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Max-Age": "86400",
-};
-
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
-}
+/*
+ * Sem CORS, de propósito.
+ *
+ * Esta rota tinha `Access-Control-Allow-Origin: *` para o widget poder
+ * chamá-la de dentro do site da MX. Com o widget fora de escopo, o único
+ * chamador legítimo é o formulário da própria landing, que é mesma origem e
+ * não precisa de CORS nenhum.
+ *
+ * Manter o curinga seria deixar qualquer site do mundo gravar lead no board
+ * da MX pelo navegador de quem o visitasse. Como o corpo vai em
+ * `application/json`, o navegador exige preflight — e sem o OPTIONS e sem o
+ * cabeçalho, a chamada de outra origem simplesmente não sai.
+ *
+ * Isso não vale para curl e afins, que ignoram CORS: contra esses quem
+ * responde são o Turnstile e o rate limit.
+ */
 
 function erro(
   status: number,
@@ -46,7 +50,7 @@ function erro(
 ) {
   return NextResponse.json(
     { error: { code, message, ...(field ? { field } : {}) } },
-    { status, headers: { ...CORS, ...extra } },
+    { status, headers: extra },
   );
 }
 
@@ -127,7 +131,7 @@ export async function POST(request: NextRequest) {
       // para ele o pedido chegou, e chegou mesmo.
       return NextResponse.json(
         { id: resultado.id, duplicate: true },
-        { status: 200, headers: CORS },
+        { status: 200 },
       );
     }
 
@@ -142,7 +146,7 @@ export async function POST(request: NextRequest) {
       origem: dados.origem,
     });
 
-    return NextResponse.json({ id: resultado.id }, { status: 201, headers: CORS });
+    return NextResponse.json({ id: resultado.id }, { status: 201 });
   } catch (falha) {
     console.error("[captura] falha ao registrar:", falha);
     return erro(

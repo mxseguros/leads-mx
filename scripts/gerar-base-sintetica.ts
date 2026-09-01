@@ -94,7 +94,7 @@ type Semente = {
 const SEMENTES: Semente[] = [
   // Clientes potenciais — inclui os dois casos que o board tem que gritar
   { nome: "Beatriz", sobrenome: "Camargo", telefone: "11987650001", empresa: "Camargo Logística", produto: "Frota", origem: "landing", fase: "potenciais", proximaAcao: "1º contato", proximaAcaoEm: dia(1), semResponsavel: true },
-  { nome: "Rogério", sobrenome: "Alves", telefone: "21987650002", empresa: "Transportes Alves", produto: "Transporte", origem: "widget-flutuante", fase: "potenciais", proximaAcao: "1º contato", proximaAcaoEm: dia(-2), semResponsavel: true },
+  { nome: "Rogério", sobrenome: "Alves", telefone: "21987650002", empresa: "Transportes Alves", produto: "Transporte", origem: "indicacao", fase: "potenciais", proximaAcao: "1º contato", proximaAcaoEm: dia(-2), semResponsavel: true },
   { nome: "Helena", sobrenome: "Prado", telefone: "31987650003", empresa: "Prado Indústria", produto: "Vida em Grupo", origem: "indicacao", fase: "potenciais", proximaAcao: "1º contato", proximaAcaoEm: dia(0) },
 
   // Reunião
@@ -102,7 +102,7 @@ const SEMENTES: Semente[] = [
   { nome: "Silvia", sobrenome: "Nakamura", telefone: "41987650005", empresa: "Nakamura Metais", produto: "Frota", origem: "instagram", fase: "reuniao", proximaAcao: "Confirmar presença", proximaAcaoEm: dia(-1) },
 
   // Acompanhamento
-  { nome: "Diego", sobrenome: "Moraes", telefone: "51987650006", empresa: "Moraes Distribuidora", produto: "Transporte", origem: "widget-inline", fase: "acompanhamento", proximaAcao: "Enviar cotação", proximaAcaoEm: dia(0) },
+  { nome: "Diego", sobrenome: "Moraes", telefone: "51987650006", empresa: "Moraes Distribuidora", produto: "Transporte", origem: "instagram", fase: "acompanhamento", proximaAcao: "Enviar cotação", proximaAcaoEm: dia(0) },
   { nome: "Patrícia", sobrenome: "Lemos", telefone: "11987650007", empresa: "Lemos Contabilidade", produto: "Auto", origem: "landing", fase: "acompanhamento", proximaAcao: "Cobrar retorno", proximaAcaoEm: dia(-5) },
   { nome: "Anderson", sobrenome: "Ribeiro", telefone: "62987650008", empresa: "Ribeiro Agro", produto: "Consórcio", origem: "manual", fase: "acompanhamento" },
 
@@ -112,7 +112,7 @@ const SEMENTES: Semente[] = [
 
   // Ganhou — premio anual e seguradora, sem apagar a estimativa
   { nome: "Fernanda", sobrenome: "Queiroz", telefone: "11987650011", empresa: "Queiroz Engenharia", produto: "Vida em Grupo", origem: "landing", fase: "ganhou", valorEstimado: 60000, premioAnual: 64800, seguradora: "Porto Seguro" },
-  { nome: "Ricardo", sobrenome: "Amaral", telefone: "19987650012", empresa: "Amaral Transportes", produto: "Transporte", origem: "widget-inline", fase: "ganhou", valorEstimado: 210000, premioAnual: 198000, seguradora: "Tokio Marine" },
+  { nome: "Ricardo", sobrenome: "Amaral", telefone: "19987650012", empresa: "Amaral Transportes", produto: "Transporte", origem: "landing", fase: "ganhou", valorEstimado: 210000, premioAnual: 198000, seguradora: "Tokio Marine" },
 
   // Perdido — motivo obrigatorio
   { nome: "Juliana", sobrenome: "Peixoto", telefone: "11987650013", empresa: "Peixoto Comércio", produto: "Auto", origem: "landing", fase: "perdido", motivoPerda: "Preço acima do orçamento" },

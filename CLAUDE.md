@@ -37,7 +37,7 @@ Sem isso o histórico mente e o Desfazer não tem o que reverter.
 nem para consertar. Falha de auth vira redirect para `/entrar`.
 
 **A chave secreta ignora a RLS.** Vive só em `lib/supabase/administrador.ts`,
-nunca em `NEXT_PUBLIC_*`, nunca em componente de cliente, nunca no widget.
+nunca em `NEXT_PUBLIC_*`, nunca em componente de cliente.
 
 **Cores de marca ≠ cores de status.** Navy e azul-claro são marca e ação;
 verde, âmbar e vermelho são exclusivos de ganho, atenção e perda.
@@ -57,7 +57,6 @@ apps/web/            Next.js 15 — landing (Fase 1), admin e API
   lib/dominio/       Fases, tipos do app, mapeador da fronteira
   lib/supabase/      Clientes: navegador, servidor, administrador, middleware
   testes/            Vitest, funções puras
-packages/widget/     Widget em Shadow DOM (Fase 1)
 supabase/migrations/ Schema, RLS, views
 supabase/tests/      Teste de RLS que prova a negativa
 scripts/             Base sintética
@@ -115,6 +114,18 @@ Handlers do Next (não FastAPI) e **D5** `won_value` separado de
 v1.1) e **D4** (landings por produto na v1) — a D4 precisa ser decidida antes da
 landing da Fase 1, senão vira retrabalho.
 
-Próximo: **Fase 1 (Captura)** — landing, `POST /api/v1/leads/public` com
-Turnstile, honeypot, rate limit e dedupe de 30 dias, e o widget em Shadow DOM.
-Checklist completo em `Docs/MX-Leads-Plano-Execucao-v0.3.md`.
+## Escopo
+
+**O widget saiu do escopo** (decisão de 01/09/2026). O produto é a landing de
+captação mais o admin. Consequência que já está no código: a rota pública não
+tem CORS — sem widget, o único chamador legítimo é o formulário da própria
+landing, que é mesma origem.
+
+Os itens F1-8 e F1-9 do plano de execução ficam cancelados. As origens
+`widget-flutuante` e `widget-inline` em `lead_sources` estão inativas.
+
+## Próximo
+
+**Fase 2 (Esteira)** — arrastar com `@dnd-kit`, ficha em gaveta, regras de fase
+validadas no servidor, histórico e Desfazer. Checklist em
+`Docs/MX-Leads-Plano-Execucao-v0.3.md`.

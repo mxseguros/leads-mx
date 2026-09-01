@@ -50,10 +50,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Tudo, menos estaticos, imagens e o widget.js (que e publico por
-     * definicao e nao pode carregar cookie de sessao).
-     */
-    "/((?!_next/static|_next/image|favicon.ico|widget.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2)$).*)",
+    // Tudo, menos estaticos e imagens.
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff2)$).*)",
   ],
 };

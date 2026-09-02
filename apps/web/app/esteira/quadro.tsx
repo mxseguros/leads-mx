@@ -175,8 +175,8 @@ export function Quadro({
         onDragCancel={() => setArrastando(null)}
         onDragEnd={aoSoltar}
       >
-        <div className="min-h-0 flex-1 overflow-x-auto px-6 py-5">
-          <div className="flex h-full gap-3">
+        <div className="min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto px-4 py-4 sm:snap-none sm:px-6 sm:py-5">
+          <div className="flex h-full gap-3 pb-1">
             {FASES.map((f) => (
               <Coluna
                 key={f.id}
@@ -262,8 +262,11 @@ function Coluna({
     <section
       ref={setNodeRef}
       aria-label={f.nome}
-      className={
-        "flex w-[272px] shrink-0 flex-col rounded-[8px] border bg-surface-2 transition-colors " +
+      className={"snap-start " +
+        // 272px no desktop; no celular a coluna ocupa quase a tela toda, para
+      // rolar de uma em vez de mostrar duas metades.
+      "flex w-[86vw] max-w-[300px] shrink-0 flex-col rounded-[8px] border bg-surface-2 " +
+      "transition-colors sm:w-[272px] " +
         (isOver ? "border-focus bg-accent-soft/40" : "border-line")
       }
     >

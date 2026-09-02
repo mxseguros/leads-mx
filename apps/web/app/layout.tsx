@@ -51,10 +51,29 @@ export default function LayoutRaiz({
   return (
     <html
       lang="pt-BR"
-      // O alternador de tema escreve data-theme antes da hidratacao.
+      // O script abaixo escreve data-theme antes da hidratacao.
       suppressHydrationWarning
       className={`${manrope.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
+      <head>
+        {/*
+          Aplica o tema salvo ANTES do primeiro pixel.
+
+          Sem isto a página pinta no tema do sistema e só troca quando o React
+          hidrata — um flash branco na cara de quem escolheu escuro, que é
+          justamente quem está trabalhando à noite.
+
+          Roda antes de o React existir, então não pode ser um componente.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              'try{var t=localStorage.getItem("mx-tema");' +
+              'if(t==="escuro")document.documentElement.setAttribute("data-theme","dark");' +
+              'else if(t==="claro")document.documentElement.setAttribute("data-theme","light")}catch(e){}',
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

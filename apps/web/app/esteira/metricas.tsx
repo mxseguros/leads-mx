@@ -92,7 +92,7 @@ function Metrica({
     detalhe.tom === "atencao" ? "text-bad" : detalhe.tom === "hoje" ? "text-warn" : "text-muted";
 
   return (
-    <div className="bg-surface px-6 py-3">
+    <div className="bg-surface px-4 py-3 sm:px-6">
       <p className="rotulo">{rotulo}</p>
       <p className="mt-1 flex items-baseline gap-1.5">
         <span

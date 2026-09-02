@@ -113,3 +113,34 @@ export async function lerMetricas(): Promise<Metricas | null> {
   if (error || !data) return null;
   return linhaParaMetricas(data as unknown as LinhaMetricas);
 }
+
+/**
+ * Sinais de SLA (F3-5).
+ *
+ * O plano previa alertas por e-mail; com o e-mail fora de escopo, eles passam
+ * a ser lidos dentro do admin. A limitação é honesta e vale registrar: só
+ * alcança quem está com a tela aberta. Um lead que chega às 18h e fica sem
+ * responsável não acorda ninguém — quem sustenta a meta de 1 dia útil é a
+ * próxima ação automática criada na captura.
+ */
+export type SinaisSla = {
+  semDonoForaDoPrazo: number;
+  followUpsAtrasados: number;
+  maiorAtrasoEmDias: number;
+  retomadasPendentes: number;
+};
+
+export async function lerSinaisSla(): Promise<SinaisSla | null> {
+  const supabase = await clienteServidor();
+  const { data, error } = await supabase.from("v_sinais_sla").select("*").maybeSingle();
+
+  if (error || !data) return null;
+
+  const linha = data as unknown as Record<string, number>;
+  return {
+    semDonoForaDoPrazo: Number(linha.sem_dono_fora_do_prazo ?? 0),
+    followUpsAtrasados: Number(linha.follow_ups_atrasados ?? 0),
+    maiorAtrasoEmDias: Number(linha.maior_atraso_em_dias ?? 0),
+    retomadasPendentes: Number(linha.retomadas_pendentes ?? 0),
+  };
+}

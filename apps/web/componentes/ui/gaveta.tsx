@@ -62,8 +62,10 @@ export function Gaveta({
         aria-label={titulo}
         tabIndex={-1}
         className={
-          "fixed inset-y-0 right-0 z-50 flex w-full max-w-[460px] flex-col " +
-          "border-l border-line bg-surface shadow-(--shadow-mx-3)"
+          // Tela cheia no celular: 460px numa tela de 390px deixaria a ficha
+          // cortada, e o board atras nao ajuda em nada num espaco desse.
+          "fixed inset-0 z-50 flex flex-col bg-surface shadow-(--shadow-mx-3) " +
+          "sm:inset-y-0 sm:left-auto sm:right-0 sm:w-full sm:max-w-[460px] sm:border-l sm:border-line"
         }
       >
         <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">

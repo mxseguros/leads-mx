@@ -133,8 +133,43 @@ Cuidado para não confundir: o Supabase **continua** mandando o magic link do
 login pelo SMTP embutido dele, que é limitado a poucos envios por hora. Isso é
 ajuste no painel (Authentication → Emails), não código.
 
-## Próximo
+**Alertas de SLA sem e-mail** (F3-5). Com o e-mail cortado, eles viraram uma
+faixa dentro do admin (`app/_admin/sinais.tsx`), lida de `v_sinais_sla`. A
+limitação é real e não deve ser esquecida: **só alcança quem está com a tela
+aberta**. Lead que chega às 18h sem responsável não acorda ninguém.
 
-**Fase 2 (Esteira)** — arrastar com `@dnd-kit`, ficha em gaveta, regras de fase
-validadas no servidor, histórico e Desfazer. Checklist em
+## Migrations aplicadas
+
+Não há controle automático de versão: tudo entrou pelo SQL Editor, na mão.
+Estado do banco de desenvolvimento em 02/09/2026 — **as cinco aplicadas**:
+
+| Migration | O que traz |
+|---|---|
+| `20260901120000_base` | extensões, enums, tabelas, gatilho de perfil |
+| `20260901120100_rls` | políticas |
+| `20260901120200_visoes` | `v_leads_board`, `v_pipeline_metrics`, `v_stage_counts` |
+| `20260901120300_fechar_views_para_anon` | revoke de `anon` — verificado: 401 em tudo |
+| `20260902100000_retomada_e_sla` | `retomar_contatos_posteriores()`, `v_sinais_sla`, agendamento |
+
+Antes de mexer no banco, confira o que está lá — não confie na ordem dos
+arquivos. Produção ainda não existe e vai precisar das cinco, na ordem.
+
+## Estado das fases
+
+Fases 0 a 3 entregues e verificadas contra o banco real. Falta a **Fase 4
+(Lançamento)**: E2E no Playwright, Sentry, painel de saúde do formulário,
+retenção LGPD, backup com restore testado, cutover e treinamento. Checklist em
 `Docs/MX-Leads-Plano-Execucao-v0.3.md`.
+
+## Pendências que não são de código
+
+1. **Turnstile (E2) — bloqueia produção.** Sem `TURNSTILE_SECRET_KEY` a captura
+   recusa tudo em produção, por decisão deliberada.
+2. **Push do git.** A conta autenticada não tem acesso ao repositório remoto;
+   os commits estão só na máquina local.
+3. **Upstash (E3).** Sem ele o rate limit vive na memória do processo e não
+   protege em serverless.
+4. **SMTP do Supabase.** O magic link estoura o limite de envios; a equipe
+   depende de link gerado pelo servidor para entrar.
+5. Segundo projeto Supabase para produção, DNS, logos em SVG, e o CI marcado
+   como *required* em branch protection.

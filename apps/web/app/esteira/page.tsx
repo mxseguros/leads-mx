@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { perfilAtual } from "@/lib/supabase/servidor";
-import { lerLeads, lerReferencias } from "@/lib/leads/consulta";
+import { lerLeads, lerMetricas, lerReferencias } from "@/lib/leads/consulta";
 import { lerConfiguracoes } from "@/lib/configuracoes";
 import { Avatar } from "@/componentes/ui/avatar";
 import { Quadro } from "./quadro";
+import { FaixaMetricas } from "./metricas";
 import { lerFiltrosDaUrl } from "@/lib/leads/filtros";
 
 export const metadata: Metadata = { title: "Esteira" };
@@ -29,9 +30,10 @@ export default async function PaginaEsteira({
   // vazia sem explicação é pior que um redirect.
   if (!perfil) redirect("/entrar");
 
-  const [{ leads, erro }, referencias, config, params] = await Promise.all([
+  const [{ leads, erro }, referencias, metricas, config, params] = await Promise.all([
     lerLeads(),
     lerReferencias(),
+    lerMetricas(),
     lerConfiguracoes(),
     searchParams,
   ]);
@@ -83,6 +85,8 @@ export default async function PaginaEsteira({
             {leads.length} {leads.length === 1 ? "lead" : "leads"}
           </span>
         </header>
+
+        <FaixaMetricas m={metricas} />
 
         {erro ? (
           <div

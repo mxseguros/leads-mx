@@ -1,8 +1,8 @@
 import "server-only";
 
 import { clienteServidor } from "../supabase/servidor";
-import { linhasParaLeads } from "../dominio/mapear";
-import type { Lead, LinhaBoard } from "../dominio/tipos";
+import { linhaParaMetricas, linhasParaLeads, type LinhaMetricas } from "../dominio/mapear";
+import type { Lead, LinhaBoard, Metricas } from "../dominio/tipos";
 
 /**
  * Leituras da esteira. Tudo pela sessão, então a RLS vale.
@@ -93,4 +93,23 @@ export async function lerHistorico(leadId: string): Promise<Evento[]> {
       payload: (e.payload ?? {}) as Record<string, unknown>,
     };
   });
+}
+
+/**
+ * Faixa de métricas (§5.3, F3-1).
+ *
+ * Lê da view, que é a fonte única (lacuna 08). Recalcular aqui criaria um
+ * segundo número para a taxa de ganho, e a conversa vira "qual está certo?"
+ * em vez de "por que estamos perdendo?".
+ *
+ * Falha devolve null em vez de zeros: uma faixa zerada mente, e o gestor
+ * tomaria decisão em cima de "nenhum lead atrasado" quando na verdade a
+ * consulta caiu.
+ */
+export async function lerMetricas(): Promise<Metricas | null> {
+  const supabase = await clienteServidor();
+  const { data, error } = await supabase.from("v_pipeline_metrics").select("*").maybeSingle();
+
+  if (error || !data) return null;
+  return linhaParaMetricas(data as unknown as LinhaMetricas);
 }

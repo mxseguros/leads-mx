@@ -5,6 +5,7 @@ import { ehFaseValida, fase, type FaseId } from "../dominio/fases";
 import { efeitosDaEntrada, validarEntrada, type DadosDaMudanca } from "../dominio/regras";
 import { validarManual } from "../captura/esquema";
 import { proximoDiaUtil } from "../captura/registrar";
+import { capturarErro } from "../observabilidade";
 import type { Perfil } from "../api";
 
 /**
@@ -119,6 +120,7 @@ export async function moverFase(
     .eq("id", leadId);
 
   if (erroUpdate) {
+    capturarErro(erroUpdate, { operacao: "moverFase", de, para: destino });
     return falha(500, "falha_gravacao", `Não conseguimos mover o lead: ${erroUpdate.message}`);
   }
 

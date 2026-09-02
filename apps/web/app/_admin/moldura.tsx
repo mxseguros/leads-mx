@@ -14,6 +14,7 @@ export type ItemNav = { href: string; rotulo: string };
 const NAVEGACAO: ItemNav[] = [
   { href: "/esteira", rotulo: "Esteira" },
   { href: "/lista", rotulo: "Lista" },
+  { href: "/saude", rotulo: "Saúde da captura" },
   { href: "/configuracoes", rotulo: "Configurações" },
 ];
 
@@ -26,8 +27,11 @@ export function Moldura({
   atual: string;
   children: React.ReactNode;
 }) {
+  // Saúde e Configurações são do gestor: uma expõe diagnóstico da operação,
+  // a outra muda o que a equipe inteira usa.
+  const soGestor = ["/configuracoes", "/saude"];
   const podeVer = (href: string) =>
-    href !== "/configuracoes" || perfil.papel === "gestor";
+    !soGestor.includes(href) || perfil.papel === "gestor";
 
   return (
     <div className="flex min-h-screen">

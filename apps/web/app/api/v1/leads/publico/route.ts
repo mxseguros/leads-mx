@@ -4,6 +4,8 @@ import { registrarCaptura } from "@/lib/captura/registrar";
 import { verificarTurnstile } from "@/lib/antispam/turnstile";
 import { verificarLimite } from "@/lib/antispam/limite";
 import { lerConfiguracoes } from "@/lib/configuracoes";
+import { registrarTentativa } from "@/lib/captura/saude";
+import { capturarErro } from "@/lib/observabilidade";
 
 /**
  * POST /api/v1/leads/publico — captura pública da landing (§8).
@@ -66,6 +68,7 @@ export async function POST(request: NextRequest) {
   // 1. Rate limit
   const limite = await verificarLimite(ip);
   if (!limite.permitido) {
+    registrarTentativa("limite");
     return erro(
       429,
       "muitas_tentativas",
@@ -80,6 +83,7 @@ export async function POST(request: NextRequest) {
   try {
     corpo = await request.json();
   } catch {
+    registrarTentativa("invalido", { campo: "corpo" });
     return erro(400, "corpo_invalido", "Não conseguimos ler os dados enviados.");
   }
 
@@ -91,10 +95,12 @@ export async function POST(request: NextRequest) {
     // (preenchimento automático agressivo), a mensagem genérica ainda serve.
     if (validacao.erros.hp) {
       console.warn(`[captura] honeypot preenchido ip=${ip ?? "?"}`);
+      registrarTentativa("honeypot");
       return erro(422, "dados_invalidos", "Confira os dados informados.");
     }
 
     const [campo, mensagem] = Object.entries(validacao.erros)[0] ?? [];
+    registrarTentativa("invalido", { campo });
     return erro(
       422,
       "dados_invalidos",
@@ -109,6 +115,7 @@ export async function POST(request: NextRequest) {
   const desafio = await verificarTurnstile(dados.turnstile, ip);
   if (!desafio.ok) {
     console.warn(`[captura] Turnstile recusou (${desafio.motivo}) ip=${ip ?? "?"}`);
+    registrarTentativa("turnstile");
     return erro(
       403,
       "verificacao_falhou",
@@ -125,6 +132,10 @@ export async function POST(request: NextRequest) {
       versaoConsentimento: config.versaoConsentimento,
     });
 
+    registrarTentativa(resultado.status === "duplicado" ? "duplicado" : "criado", {
+      origem: dados.origem,
+    });
+
     if (resultado.status === "duplicado") {
       // 200, não 201: nada foi criado. O visitante não precisa saber disso —
       // para ele o pedido chegou, e chegou mesmo.
@@ -139,7 +150,8 @@ export async function POST(request: NextRequest) {
     // contato" agendado para o proximo dia util.
     return NextResponse.json({ id: resultado.id }, { status: 201 });
   } catch (falha) {
-    console.error("[captura] falha ao registrar:", falha);
+    capturarErro(falha, { rota: "leads/publico", origem: dados.origem });
+    registrarTentativa("erro");
     return erro(
       500,
       "falha_interna",

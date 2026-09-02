@@ -45,6 +45,7 @@ export function Painel({
 
   return (
     <div className="mx-auto flex w-full max-w-[760px] flex-col gap-9 px-4 py-8 sm:px-6">
+      <MinhaSenha onAviso={mostrar} />
       <Whatsapp config={config} onAviso={mostrar} />
       <Consentimento config={config} onAviso={mostrar} onSalvo={() => router.refresh()} />
       <Listas
@@ -61,6 +62,91 @@ export function Painel({
 }
 
 /* ------------------------------------------------------------------ seções */
+
+function MinhaSenha({ onAviso }: { onAviso: (m: string) => void }) {
+  const [senha, setSenha] = useState("");
+  const [repetir, setRepetir] = useState("");
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  async function salvar() {
+    setErro(null);
+    if (senha !== repetir) {
+      setErro("As duas senhas não são iguais.");
+      return;
+    }
+
+    setSalvando(true);
+    const r = await fetch("/api/v1/senha", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ senha }),
+    });
+    setSalvando(false);
+
+    if (!r.ok) {
+      const c = (await r.json().catch(() => null)) as { error?: { message?: string } } | null;
+      setErro(c?.error?.message ?? "Não conseguimos trocar a senha.");
+      return;
+    }
+    setSenha("");
+    setRepetir("");
+    onAviso("Senha atualizada.");
+  }
+
+  return (
+    <Secao
+      titulo="Minha senha"
+      descricao="A senha entra em /entrar sem depender de e-mail. É o caminho do dia a dia; o link por e-mail fica para quem esquecer."
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="senha-nova" className="text-[13px] font-[600] text-heading">
+            Nova senha
+          </label>
+          <input
+            id="senha-nova"
+            type="password"
+            value={senha}
+            autoComplete="new-password"
+            onChange={(e) => setSenha(e.target.value)}
+            className="h-[42px] rounded-[6px] border border-line-strong bg-surface px-3 text-[15px] text-texto"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="senha-repetir" className="text-[13px] font-[600] text-heading">
+            Repetir
+          </label>
+          <input
+            id="senha-repetir"
+            type="password"
+            value={repetir}
+            autoComplete="new-password"
+            onChange={(e) => setRepetir(e.target.value)}
+            className="h-[42px] rounded-[6px] border border-line-strong bg-surface px-3 text-[15px] text-texto"
+          />
+        </div>
+      </div>
+
+      <p className="text-[12.5px] text-muted">Mínimo de 8 caracteres.</p>
+
+      {erro ? (
+        <p role="alert" className="text-[12.5px] text-bad">
+          {erro}
+        </p>
+      ) : null}
+
+      <Botao
+        onClick={salvar}
+        disabled={salvando || senha.length < 8 || !repetir}
+        className="self-start"
+      >
+        {salvando ? "Salvando…" : "Trocar senha"}
+      </Botao>
+    </Secao>
+  );
+}
 
 function Whatsapp({
   config,
@@ -336,16 +422,19 @@ function Equipe({
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [papel, setPapel] = useState<"consultor" | "gestor">("consultor");
+  const [senha, setSenha] = useState("");
   const [convidando, setConvidando] = useState(false);
   const [linkGerado, setLinkGerado] = useState<string | null>(null);
+  const [criouComSenha, setCriouComSenha] = useState<string | null>(null);
 
   async function convidar() {
     setConvidando(true);
     setLinkGerado(null);
+    setCriouComSenha(null);
     const r = await fetch("/api/v1/configuracoes/equipe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, email, papel }),
+      body: JSON.stringify({ nome, email, papel, senha: senha || undefined }),
     });
     setConvidando(false);
 
@@ -355,8 +444,10 @@ function Equipe({
       return;
     }
     const d = (await r.json()) as { link: string | null };
+    if (!d.link) setCriouComSenha(email);
     setNome("");
     setEmail("");
+    setSenha("");
     setLinkGerado(d.link);
     onMudou();
   }
@@ -443,6 +534,15 @@ function Equipe({
           </select>
         </div>
 
+        <input
+          type="text"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          placeholder="Senha inicial (opcional, mínimo 8 caracteres)"
+          autoComplete="off"
+          className="mt-2 h-9 w-full rounded-[6px] border border-line-strong bg-surface px-3 text-[14px] text-texto placeholder:text-faint"
+        />
+
         <Botao
           onClick={convidar}
           disabled={convidando || !nome.trim() || !email.trim()}
@@ -451,10 +551,22 @@ function Equipe({
           {convidando ? "Criando…" : "Criar acesso"}
         </Botao>
 
-        <p className="mt-2 text-[12px] text-muted">
-          Não enviamos e-mail. O acesso é criado e um link aparece aqui para você repassar —
-          menos automático, e mais honesto que um convite que falha em silêncio.
+        <p className="mt-2 max-w-[68ch] text-[12px] text-muted">
+          Não enviamos e-mail. <strong>Com senha</strong>, a pessoa entra direto em
+          /entrar. <strong>Sem senha</strong>, aparece aqui um link para você repassar — e
+          ela define a senha depois, nesta mesma tela.
         </p>
+
+        {criouComSenha ? (
+          <div className="mt-3 rounded-[6px] border border-ok bg-ok-soft p-3">
+            <p className="text-[13px] font-[600] text-heading">Acesso criado com senha</p>
+            <p className="mt-1 text-[12px] text-texto">
+              <strong>{criouComSenha}</strong> já pode entrar em /entrar. Combine a senha
+              por um canal seguro — ela não fica guardada em lugar nenhum que dê para
+              consultar depois.
+            </p>
+          </div>
+        ) : null}
 
         {linkGerado ? (
           <div className="mt-3 rounded-[6px] border border-ok bg-ok-soft p-3">

@@ -23,8 +23,10 @@ export async function clienteServidor() {
             armazem.set(name, value, options);
           }
         } catch {
-          // Server Component nao pode escrever cookie. O middleware ja
-          // renovou a sessao antes de chegar aqui, entao ignorar e correto.
+          // Server Component nao pode escrever cookie. Server Action e Route
+          // Handler podem — e e por isso que o login por senha funciona daqui.
+          // O middleware ja renovou a sessao antes de chegar num Server
+          // Component, entao ignorar ali e correto.
         }
       },
     },

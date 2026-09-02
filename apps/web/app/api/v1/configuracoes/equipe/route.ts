@@ -8,21 +8,29 @@ import { urlBase } from "@/lib/ambiente";
  * POST /api/v1/configuracoes/equipe — convida alguém para a equipe (§5.6).
  *
  * NÃO manda e-mail: o SMTP embutido do Supabase é limitado e o e-mail
- * transacional saiu do escopo. A rota cria o usuário e devolve um link de
- * acesso para o gestor repassar pelo canal que quiser.
+ * transacional saiu do escopo.
  *
- * Menos automático, e mais honesto que um convite que falha em silêncio
- * porque a caixa de saída estourou o limite.
+ * O gestor escolhe como a pessoa entra:
+ *   com `senha`  — acesso imediato, sem depender de e-mail nenhum
+ *   sem `senha`  — a rota devolve um link para o gestor repassar
+ *
+ * Menos automático que um convite por e-mail, e mais honesto que um convite
+ * que falha em silêncio porque a caixa de saída estourou o limite.
  */
 export async function POST(request: NextRequest) {
   const sessao = await exigirGestor();
   if (!sessao.ok) return sessao.resposta;
 
   const corpo = (await lerCorpo(request)) as
-    | { email?: string; nome?: string; papel?: string }
+    | { email?: string; nome?: string; papel?: string; senha?: string }
     | null;
   if (!corpo?.email || !corpo?.nome) {
     return erroJson(422, "dados_invalidos", "Informe nome e e-mail.", "email");
+  }
+
+  const senha = corpo.senha?.trim() || undefined;
+  if (senha && senha.length < 8) {
+    return erroJson(422, "senha_curta", "A senha precisa ter pelo menos 8 caracteres.", "senha");
   }
 
   const papel = corpo.papel === "gestor" ? "gestor" : "consultor";
@@ -31,8 +39,9 @@ export async function POST(request: NextRequest) {
   const { data: criado, error: erroCriacao } = await admin.auth.admin.createUser({
     email: corpo.email.trim().toLowerCase(),
     email_confirm: true,
-    // Sem senha: o acesso é por magic link, e conta sem senha não tem
-    // credencial para vazar.
+    // Sem senha, a conta só entra por magic link — e conta sem senha não tem
+    // credencial para vazar. Com senha, entra sem depender de e-mail.
+    ...(senha ? { password: senha } : {}),
     user_metadata: { full_name: corpo.nome.trim(), role: papel },
   });
 
@@ -44,6 +53,11 @@ export async function POST(request: NextRequest) {
       jaExiste ? "Esse e-mail já está cadastrado." : "Não conseguimos criar o acesso agora.",
       "email",
     );
+  }
+
+  // Com senha definida, a pessoa já entra por /entrar — link seria ruído.
+  if (senha) {
+    return Response.json({ id: criado.user.id, link: null }, { status: 201 });
   }
 
   const { data: link } = await admin.auth.admin.generateLink({

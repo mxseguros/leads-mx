@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Botao } from "@/componentes/ui/botao";
 import { Aviso, useAviso } from "@/componentes/ui/aviso";
@@ -110,8 +110,9 @@ function Whatsapp({
       />
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-[13px] font-[600] text-heading">Mensagem</label>
+        <label htmlFor="wa-template" className="text-[13px] font-[600] text-heading">Mensagem</label>
         <textarea
+          id="wa-template"
           value={template}
           onChange={(e) => setTemplate(e.target.value)}
           rows={3}
@@ -180,8 +181,9 @@ function Consentimento({
       descricao="O texto que aparece ao lado do checkbox na landing, e o link da política de privacidade."
     >
       <div className="flex flex-col gap-1.5">
-        <label className="text-[13px] font-[600] text-heading">Texto do consentimento</label>
+        <label htmlFor="lgpd-texto" className="text-[13px] font-[600] text-heading">Texto do consentimento</label>
         <textarea
+          id="lgpd-texto"
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           rows={3}
@@ -505,10 +507,12 @@ function Campo({
   dica?: string;
   tabular?: boolean;
 }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-[600] text-heading">{rotulo}</label>
+      <label htmlFor={id} className="text-[13px] font-[600] text-heading">{rotulo}</label>
       <input
+        id={id}
         type="text"
         value={valor}
         onChange={(e) => onMuda(e.target.value)}

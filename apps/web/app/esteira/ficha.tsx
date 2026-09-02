@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Botao } from "@/componentes/ui/botao";
 import { Gaveta } from "@/componentes/ui/gaveta";
 import { Avatar } from "@/componentes/ui/avatar";
@@ -294,6 +294,9 @@ export function Ficha({
               value={nota}
               onChange={(e) => setNota(e.target.value)}
               rows={2}
+              // Placeholder some ao digitar: sem aria-label, leitor de tela
+              // anuncia "campo de texto" e nada mais.
+              aria-label="Nota rápida"
               placeholder="O que aconteceu nesta conversa?"
               className="w-full resize-y rounded-[6px] border border-line-strong bg-surface p-2.5 text-[14px] text-texto placeholder:text-faint"
             />
@@ -400,6 +403,7 @@ function CampoInline({
   onSalvar: (v: string) => Promise<boolean>;
   tipo?: "text" | "date" | "number";
 }) {
+  const id = useId();
   const [atual, setAtual] = useState(valor);
   const [salvando, setSalvando] = useState(false);
   const original = useRef(valor);
@@ -420,11 +424,12 @@ function CampoInline({
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-[12px] text-muted">
+      <label htmlFor={id} className="text-[12px] text-muted">
         {rotulo}
         {salvando ? <span className="ml-1.5 text-faint">salvando…</span> : null}
       </label>
       <input
+        id={id}
         type={tipo}
         value={atual}
         onChange={(e) => setAtual(e.target.value)}
@@ -446,13 +451,15 @@ function CampoSelecao({
   opcoes: { valor: string; texto: string }[];
   onSalvar: (v: string) => Promise<boolean>;
 }) {
+  const id = useId();
   const [atual, setAtual] = useState(valor);
   useEffect(() => setAtual(valor), [valor]);
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-[12px] text-muted">{rotulo}</label>
+      <label htmlFor={id} className="text-[12px] text-muted">{rotulo}</label>
       <select
+        id={id}
         value={atual}
         onChange={async (e) => {
           const v = e.target.value;

@@ -30,3 +30,11 @@ test-results/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Playwright
+# SEM barra no comeco: com "e2e/.sessao.json" o padrao ancora na raiz e nao
+# pega apps/web/e2e/. O arquivo guarda o cookie de sessao — access token e
+# refresh token de quem rodou os testes.
+**/e2e/.sessao.json
+playwright-report/
+test-results/

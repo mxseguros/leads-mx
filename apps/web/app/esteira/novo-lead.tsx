@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Botao } from "@/componentes/ui/botao";
 import { Modal } from "@/componentes/ui/modal";
 import { mascararEmail, mascararNome, mascararTelefone } from "@/lib/captura/mascara";
@@ -192,10 +192,12 @@ function Campo({
   placeholder?: string;
   tabular?: boolean;
 }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-[600] text-heading">{rotulo}</label>
+      <label htmlFor={id} className="text-[13px] font-[600] text-heading">{rotulo}</label>
       <input
+        id={id}
         type="text"
         value={valor}
         placeholder={placeholder}
@@ -227,10 +229,12 @@ function Selecao({
   opcoes: { valor: string; texto: string }[];
   onMuda: (v: string) => void;
 }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-[600] text-heading">{rotulo}</label>
+      <label htmlFor={id} className="text-[13px] font-[600] text-heading">{rotulo}</label>
       <select
+        id={id}
         value={valor}
         onChange={(e) => onMuda(e.target.value)}
         className="h-[42px] rounded-[6px] border border-line-strong bg-surface px-3 text-[15px] text-texto"

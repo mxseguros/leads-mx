@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Botao } from "@/componentes/ui/botao";
 import { Modal } from "@/componentes/ui/modal";
 import { fase, type FaseId } from "@/lib/dominio/fases";
@@ -219,10 +219,12 @@ function CampoTexto({
   placeholder?: string;
   dica?: string;
 }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-[600] text-heading">{rotulo}</label>
+      <label htmlFor={id} className="text-[13px] font-[600] text-heading">{rotulo}</label>
       <input
+        id={id}
         type="text"
         value={valor}
         placeholder={placeholder}
@@ -249,10 +251,12 @@ function CampoData({
   dica?: string;
   minimo?: string;
 }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-[600] text-heading">{rotulo}</label>
+      <label htmlFor={id} className="text-[13px] font-[600] text-heading">{rotulo}</label>
       <input
+        id={id}
         type="date"
         value={valor}
         min={minimo}
@@ -287,10 +291,12 @@ function CampoValor({
   erro?: string | null;
   dica?: string;
 }) {
+  const id = useId();
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-[600] text-heading">{rotulo}</label>
+      <label htmlFor={id} className="text-[13px] font-[600] text-heading">{rotulo}</label>
       <input
+        id={id}
         type="number"
         inputMode="decimal"
         min={0}

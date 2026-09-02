@@ -153,7 +153,21 @@ export function Quadro({
         onMuda={setFiltros}
       />
 
+      {/*
+        `id` fixo, e não gerado.
+
+        Sem ele o dnd-kit monta o aria-describedby dos cartões com um contador
+        de módulo: o servidor renderizava "DndDescribedBy-2" (o processo já
+        tinha montado outros contextos) e o cliente começava do zero em
+        "DndDescribedBy-0". Atributo diferente entre servidor e cliente é
+        exatamente o que dispara o erro de hidratação do React, e ele avisa que
+        não corrige — o cartão ficava sem a descrição para leitor de tela.
+
+        `useUniqueId(prefixo, valor)` devolve o valor verbatim quando ele
+        existe, então passar um id estável resolve nos dois lados.
+      */}
       <DndContext
+        id="esteira"
         sensors={sensores}
         onDragStart={(e: DragStartEvent) =>
           setArrastando(leads.find((l) => l.id === String(e.active.id)) ?? null)

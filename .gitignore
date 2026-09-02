@@ -38,3 +38,7 @@ Thumbs.db
 **/e2e/.sessao.json
 playwright-report/
 test-results/
+.vercel
+
+# Vercel
+.vercel/

@@ -154,6 +154,23 @@ Estado do banco de desenvolvimento em 02/09/2026 — **as cinco aplicadas**:
 Antes de mexer no banco, confira o que está lá — não confie na ordem dos
 arquivos. Produção ainda não existe e vai precisar das cinco, na ordem.
 
+## Armadilhas deste ambiente
+
+**Nunca apague `.next` nem rode `build` com o `next dev` de pé.** O servidor
+continua servindo HTML que aponta para chunks já removidos: o CSS vira 404 e a
+página abre sem estilo nenhum, ou o E2E falha em massa sem motivo aparente.
+Pare o servidor primeiro. O sintoma é sempre o mesmo, e a checagem é uma só:
+
+```bash
+curl -sI http://localhost:3000/_next/static/css/app/layout.css
+```
+
+**CSS sem `@layer` vence CSS em layer.** As regras de elemento em
+`globals.css` vivem em `@layer base` e as classes auxiliares em
+`@layer components` por causa disso: soltas, elas sobrepunham as utilitárias do
+Tailwind — `text-white` num `h1` não fazia efeito, e o título do hero saía navy
+sobre navy.
+
 ## Estado das fases
 
 Fases 0 a 3 entregues e verificadas contra o banco real. Falta a **Fase 4

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { lerConfiguracoes, linkWhatsapp } from "@/lib/configuracoes";
+import { LockupMX, SeloMX } from "@/componentes/marca";
 import { CartaoCaptura } from "./_landing/cartao";
 import { DIFERENCIAIS, PRODUTOS, PROVAS, landing } from "./_landing/conteudo";
 
@@ -58,14 +59,7 @@ export default async function PaginaLanding() {
       {/* ---------- Hero navy ---------- */}
       <header className="bg-[var(--mx-navy)] text-[#EEF3FA]">
         <div className="mx-auto max-w-[1120px] px-6 pb-24 pt-7 sm:pb-28">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-[7px] bg-[var(--mx-sky)] font-(family-name:--font-display) text-[14px] font-[800] text-[var(--mx-navy)]">
-              MX
-            </span>
-            <span className="font-(family-name:--font-display) text-[10.5px] font-[700] uppercase tracking-[.14em] text-[#8FA8C4]">
-              Corretora de seguros
-            </span>
-          </div>
+          <LockupMX altura={26} modo="fixo" titulo="MX Corretora de seguros" />
 
           <div className="mt-14 grid gap-12 lg:grid-cols-[1.05fr_minmax(0,420px)] lg:gap-16">
             <div>
@@ -99,11 +93,8 @@ export default async function PaginaLanding() {
               </dl>
 
               {/* Selo de confiança — nunca como logo principal (§4.3). */}
-              <div className="mt-9 inline-flex items-center gap-3 rounded-full border border-[rgba(202,227,247,.28)] px-4 py-2">
-                <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--mx-sky)]" />
-                <span className="font-(family-name:--font-display) text-[11px] font-[700] uppercase tracking-[.12em] text-[#C3D2E4]">
-                  Corretora de seguros · desde 2002
-                </span>
+              <div className="mt-9">
+                <SeloMX tamanho={92} />
               </div>
             </div>
 
@@ -162,13 +153,8 @@ export default async function PaginaLanding() {
       {/* ---------- Rodapé ---------- */}
       <footer className="border-t border-line bg-surface-2">
         <div className="mx-auto flex max-w-[1120px] flex-col gap-6 px-6 py-10 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-[7px] bg-brand font-(family-name:--font-display) text-[14px] font-[800] text-on-brand">
-              MX
-            </span>
-            <span className="font-(family-name:--font-display) text-[10.5px] font-[700] uppercase tracking-[.14em] text-muted">
-              Corretora de seguros
-            </span>
+          <div className="text-heading">
+            <LockupMX altura={24} titulo="MX Corretora de seguros" />
           </div>
 
           <div className="max-w-[46ch] text-[12.5px] leading-relaxed text-muted">

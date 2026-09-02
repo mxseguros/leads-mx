@@ -223,15 +223,27 @@
 /* ---------------------------------------------------------------------------
    Base
    --------------------------------------------------------------------------- */
-* {
-  box-sizing: border-box;
-}
+/*
+ * TUDO daqui para baixo vive em @layer.
+ *
+ * CSS sem layer VENCE CSS em layer, então `h1 { color: var(--heading) }` solto
+ * sobrepunha toda utilitária de cor do Tailwind: `text-white` num h1 não fazia
+ * efeito, e o título do hero saía navy sobre navy — invisível.
+ *
+ * Com as regras de elemento em `base` e as classes auxiliares em `components`,
+ * a ordem declarada pelo Tailwind (theme, base, components, utilities) volta a
+ * valer e as utilitárias ganham, que é o que se espera delas.
+ */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-html {
-  -webkit-text-size-adjust: 100%;
-}
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
 
-body {
+  body {
   /* O host pinta o fundo no tema DELE: corpo transparente empresta o
      fundo errado. Por isso a cor vem sempre de token, nunca por omissao. */
   background: var(--bg);
@@ -240,43 +252,46 @@ body {
   font-size: 15px;
   line-height: 1.6;
   margin: 0;
-  -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    color: var(--heading);
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  /* Anel de foco de 3px (§4.4). Visivel em todo controle, sem excecao. */
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: .01ms !important;
+      transition-duration: .01ms !important;
+    }
+  }
 }
 
-h1, h2, h3, h4, h5 {
-  font-family: var(--font-display);
-  color: var(--heading);
-  text-wrap: balance;
-  margin: 0;
-}
+@layer components {
+  /* Telefone, valor e data alinham por coluna (§4.2) */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 
-/* Anel de foco de 3px (§4.4). Visivel em todo controle, sem excecao. */
-:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* Telefone, valor e data alinham por coluna (§4.2) */
-.tabular {
-  font-variant-numeric: tabular-nums;
-}
-
-/* Rotulo em caixa alta (§4.2) */
-.rotulo {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
+  /* Rotulo em caixa alta (§4.2) */
+  .rotulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
 }

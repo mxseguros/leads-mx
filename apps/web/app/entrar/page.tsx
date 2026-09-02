@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { LockupMX } from "@/componentes/marca";
 import { FormularioEntrada } from "./formulario";
 
 export const metadata: Metadata = { title: "Entrar" };
@@ -13,11 +14,9 @@ export default async function PaginaEntrar({
   return (
     <main className="grid min-h-screen place-items-center px-6 py-12">
       <div className="w-full max-w-[380px]">
-        <div className="mb-8 flex items-center gap-3">
-          <span className="grid size-9 place-items-center rounded-[7px] bg-brand font-(family-name:--font-display) text-[14px] font-[800] text-on-brand">
-            MX
-          </span>
-          <span className="rotulo">Corretora de seguros</span>
+        {/* Fundo muda com o tema: modo adaptavel, o logo segue a cor do texto. */}
+        <div className="mb-8 text-heading">
+          <LockupMX altura={26} titulo="MX Corretora de seguros" />
         </div>
 
         <h1 className="text-[26px] font-[800] leading-tight">

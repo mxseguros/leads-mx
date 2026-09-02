@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Avatar } from "@/componentes/ui/avatar";
+import { LockupMX } from "@/componentes/marca";
 import { AlternadorTema } from "./tema";
 
 /**
@@ -37,13 +38,12 @@ export function Moldura({
     <div className="flex min-h-screen">
       <aside className="hidden w-[232px] shrink-0 flex-col justify-between bg-[var(--mx-navy)] px-4 py-5 md:flex">
         <div>
-          <div className="mb-8 flex items-center gap-2.5 px-1">
-            <span className="grid size-8 place-items-center rounded-[6px] bg-[var(--mx-sky)] font-(family-name:--font-display) text-[13px] font-[800] text-[var(--mx-navy)]">
-              MX
-            </span>
-            <span className="font-(family-name:--font-display) text-[10.5px] font-[700] uppercase tracking-[.13em] text-[#8FA8C4]">
+          <div className="mb-8 px-1">
+            {/* Sidebar e sempre navy: o PNG branco serve direto. */}
+            <LockupMX altura={22} modo="fixo" titulo="MX Corretora de seguros" />
+            <p className="mt-1.5 font-(family-name:--font-display) text-[10.5px] font-[700] uppercase tracking-[.13em] text-[#8FA8C4]">
               Leads
-            </span>
+            </p>
           </div>
 
           <nav className="flex flex-col gap-0.5">
